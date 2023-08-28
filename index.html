@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+
+<html lang="ch">
+<head>
+    <meta charset="UTF-8">
+    <title>数字人演示</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background: linear-gradient(to right, #f3f3f3, #e9e9e9);
+            color: #444;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        img {
+            height: 75vh;
+            width: auto; /* Auto width to maintain aspect ratio */
+            max-width: 100%; /* Ensure the image doesn't overflow the container */
+            display: block;
+            margin: 0 auto 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label, select, textarea, button {
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        select, textarea {
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            form {
+                gap: 10px;
+                padding: 15px;
+            }
+
+            label, select, textarea, button {
+                padding: 5px;
+            }
+        }
+
+        .content-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: start; /* 如果你希望它们垂直居中，可以改为 center */
+            gap: 20px; /* 为组件之间添加间距 */
+            /*max-width: auto; !* 或根据您的需要 *!*/
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<h1>数字人演示</h1>
+<div class="content-wrapper">
+    <img alt="等待数字人中" id="video"
+         src="https://th.bing.com/th/id/R.13f7fbf9b6556c2a3266c80457cd2049?rik=H%2f36i6HZcAErAA&amp;riu=http%3a%2f%2fi2.hdslb.com%2fbfs%2farchive%2fcbae24cad74d3a79579f3b986f5af2b19402459c.jpg&amp;ehk=CHAAGLMDjzDcXCwtG6NszOsgVx2%2bQAWAG8MBZ1rT%2bnw%3d&amp;risl=&amp;pid=ImgRaw&amp;r=0"/>
+    <form id="form" target="targetIfr">
+        <label for="digman">选择一个数字人:</label>
+        <select id="digman" name="digman">
+        </select>
+        <label for="text">让ta说什么:</label>
+        <textarea id="text" name="text"></textarea>
+        <button onclick="submitForm()" type="button">让ta说</button>
+    </form>
+</div>
+<iframe name="targetIfr" style="display:none"></iframe>
+<script>
+    let api_base_url = "https://u212612-a7fe-047f3cea.westb.seetacloud.com:8443";
+    //音频播放组件
+    let ad = new Audio();
+    //视频播放组件
+    let vd = document.getElementById('video');
+
+    function submitForm() {
+        //表单
+        const form = document.getElementById('form')
+
+        let streamId = uuidv4();
+        // 获取表单元素
+        const formObj = formToObj(form);
+        formObj.stream_id = streamId;
+        // 使用fetch API发送POST请求
+        console.log("formObj:", formObj);
+        fetch(`${api_base_url}/let_digman_talk`, {
+            method: 'POST',
+            body: JSON.stringify(formObj),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => response.json()) // 解析JSON响应
+            .then(video_count => {
+                console.log(`streamId=${streamId} video_count=${video_count}`);
+                // 处理音视频分段播放
+                let encoded_stream_id = encodeURIComponent(streamId);
+                playVideoAudio(encoded_stream_id, 0, video_count);
+            })
+            .catch(error => {
+                console.error('提交表单时出错:', error);
+            });
+    }
+
+    /**
+     * 播放stream_id的第index个视频音频，然后接着播放下一个，直到播放至第max_index个
+     * @param encoded_stream_id
+     * @param {number} index encoded_stream_id流的视频分段编号
+     * @param count
+     */
+    function playVideoAudio(encoded_stream_id, index, count) {
+        //递归尾
+        if (index >= count) {
+            console.log("播放完毕");
+            return;
+        }
+
+
+        //视频播放
+        vd.src = `${api_base_url}/digman_video?stream_id=${encoded_stream_id}&index=${index}`;
+        //音频播放
+        //新播音源
+        ad.src = `${api_base_url}/digman_audio?stream_id=${encoded_stream_id}&index=${index}`;
+        ad.load();
+        //播放完成的事件
+        let play_over_handler = () => {
+            playVideoAudio(encoded_stream_id, index + 1, count);
+        }
+        ad.onended = play_over_handler;
+        ad.onerror = play_over_handler;
+        ad.play();
+    }
+
+    //select下拉
+    fetch(`${api_base_url}/digital_humans`)
+        .then(response => response.json())
+        .then(data => {
+            const selectElement = document.getElementById('digman');
+            data.forEach(item => {
+                const optionElement = document.createElement('option');
+                optionElement.text = item.name;
+                optionElement.value = item.value;
+                selectElement.add(optionElement);
+            });
+        });
+
+    /**
+     * 随机生成uuid v4字符串
+     */
+    function uuidv4() {
+        return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+    }
+
+    function formToObj(form) {
+        let formData = new FormData(form);
+        let obj = {};
+
+        formData.forEach((value, key) => {
+            // 如果obj中已经存在该键，且其值是一个数组，则直接在该数组中追加新的值。
+            // 否则，如果obj中已经存在该键，但其值不是数组，则创建一个数组，包含旧值和新值。
+            // 如果obj中还不存在该键，则直接添加。
+            if (obj[key]) {
+                if (Array.isArray(obj[key])) {
+                    obj[key].push(value);
+                } else {
+                    obj[key] = [obj[key], value];
+                }
+            } else {
+                obj[key] = value;
+            }
+        });
+
+        return obj;
+    }
+</script>
+</body>
+</html>
