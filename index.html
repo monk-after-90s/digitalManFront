@@ -125,6 +125,7 @@
 </div>
 <iframe name="targetIfr" style="display:none"></iframe>
 <script>
+    let base_url = '';
     //音频播放组件
     let ad = new Audio();
     //视频播放组件
@@ -140,7 +141,7 @@
         formObj.stream_id = streamId;
         // 使用fetch API发送POST请求
         console.log("formObj:", formObj);
-        fetch(`/api/let_digman_talk`, {
+        fetch(`${base_url}/api/let_digman_talk`, {
             method: 'POST',
             body: JSON.stringify(formObj),
             headers: {
@@ -173,10 +174,10 @@
 
 
         //视频播放
-        vd.src = `/api/digman_video?stream_id=${encoded_stream_id}&index=${index}`;
+        vd.src = `${base_url}/api/digman_video?stream_id=${encoded_stream_id}&index=${index}`;
         //音频播放
         //新播音源
-        ad.src = `/api/digman_audio?stream_id=${encoded_stream_id}&index=${index}`;
+        ad.src = `${base_url}/api/digman_audio?stream_id=${encoded_stream_id}&index=${index}`;
         ad.load();
         //播放完成的事件
         let play_over_handler = () => {
@@ -188,7 +189,7 @@
     }
 
     //select下拉
-    fetch(`/api/digital_humans`)
+    fetch(`${base_url}/api/digital_humans`)
         .then(response => response.json())
         .then(data => {
             const selectElement = document.getElementById('digman');
