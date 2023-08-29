@@ -88,10 +88,10 @@
         /* img 样式，使其位于 video 之上 */
         .container img {
             position: absolute;
-            top: 50%; /* 从顶部10%的位置开始 */
-            left: 50%; /* 从左侧10%的位置开始 */
+            top: 0%; /* 从顶部10%的位置开始 */
+            left: 22.4%; /* 从左侧10%的位置开始 */
             width: auto;
-            height: 10vh;
+            height: 28.8vh;
             z-index: 1; /* 确保 img 位于 video 之上 */
 
             /*height: 75vh;*/
@@ -107,7 +107,7 @@
 <div class="content-wrapper">
     <div class="container">
         <video autoplay loop muted>
-            <source src="static/welcome.mp4" type="video/mp4">
+            <source src="static/jk.mp4" type="video/mp4">
             您的浏览器不支持 video 标签。
         </video>
         <img src="https://img.zcool.cn/community/01c2d95efd50cba801206621d9ecd9.jpg@3000w_1l_0o_100sh.jpg"
@@ -153,6 +153,8 @@
                 console.log(`streamId=${streamId} video_count=${video_count}`);
                 // 处理音视频分段播放
                 let encoded_stream_id = encodeURIComponent(streamId);
+
+                vd.style.display = "block";
                 playVideoAudio(encoded_stream_id, 0, video_count);
             })
             .catch(error => {
@@ -169,6 +171,7 @@
     function playVideoAudio(encoded_stream_id, index, count) {
         //递归尾
         if (index >= count) {
+            vd.style.display = "none";
             console.log("播放完毕");
             return;
         }
