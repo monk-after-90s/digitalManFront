@@ -18,14 +18,6 @@
             margin-bottom: 20px;
         }
 
-        img {
-            height: 75vh;
-            width: auto; /* Auto width to maintain aspect ratio */
-            max-width: 100%; /* Ensure the image doesn't overflow the container */
-            display: block;
-            margin: 0 auto 20px;
-        }
-
         form {
             display: flex;
             flex-direction: column;
@@ -79,13 +71,49 @@
             /*max-width: auto; !* 或根据您的需要 *!*/
             margin: 0 auto;
         }
+
+        /* 容器样式，用于定位 img 和 video */
+        .container {
+            position: relative;
+            width: auto;
+            height: 75vh;
+        }
+
+        /* video 样式 */
+        .container video {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* img 样式，使其位于 video 之上 */
+        .container img {
+            position: absolute;
+            top: 50%; /* 从顶部10%的位置开始 */
+            left: 50%; /* 从左侧10%的位置开始 */
+            width: 50px;
+            height: 50px;
+            z-index: 1; /* 确保 img 位于 video 之上 */
+
+            /*height: 75vh;*/
+            /*width: auto; !* Auto width to maintain aspect ratio *!*/
+            max-width: 100%; /* Ensure the image doesn't overflow the container */
+            display: none;
+            /*margin: 0 auto 20px;*/
+        }
     </style>
 </head>
 <body>
 <h1>数字人演示</h1>
 <div class="content-wrapper">
-    <img alt="等待数字人中" id="video"
-         src="https://th.bing.com/th/id/R.13f7fbf9b6556c2a3266c80457cd2049?rik=H%2f36i6HZcAErAA&amp;riu=http%3a%2f%2fi2.hdslb.com%2fbfs%2farchive%2fcbae24cad74d3a79579f3b986f5af2b19402459c.jpg&amp;ehk=CHAAGLMDjzDcXCwtG6NszOsgVx2%2bQAWAG8MBZ1rT%2bnw%3d&amp;risl=&amp;pid=ImgRaw&amp;r=0"/>
+    <div class="container">
+        <video autoplay loop muted>
+            <source src="static/welcome.mp4" type="video/mp4">
+            您的浏览器不支持 video 标签。
+        </video>
+        <img src="" id="video"
+             alt="等待数字人中">
+    </div>
+
     <form id="form" target="targetIfr">
         <label for="digman">选择一个数字人:</label>
         <select id="digman" name="digman">
