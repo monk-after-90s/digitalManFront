@@ -139,6 +139,10 @@
         let streamId = uuidv4();
         // 获取表单元素
         const formObj = formToObj(form);
+        //更新数字人背景视频
+        if (!document.getElementById('bg_video').src.endsWith(`static/${formObj.digman}.mp4`)) {
+            document.getElementById('bg_video').src = `static/${formObj.digman}.mp4`;
+        }
         formObj.stream_id = streamId;
         // 使用fetch API发送POST请求
         console.log("formObj:", formObj);
