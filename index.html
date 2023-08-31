@@ -107,7 +107,7 @@
 <div class="content-wrapper">
     <div class="container">
         <video autoplay loop muted id="bg_video">
-            <source src="static/welcome.mp4" type="video/mp4">
+            <source src="static/videos/welcome.mp4" type="video/mp4">
             您的浏览器不支持 video 标签。
         </video>
         <img src="https://img.zcool.cn/community/01c2d95efd50cba801206621d9ecd9.jpg@3000w_1l_0o_100sh.jpg"
@@ -144,7 +144,7 @@
                     // 获取被选定的option元素
                     let selectedOption = event.target;
                     //更新数字人背景视频
-                    document.getElementById('bg_video').src = `static/${selectedOption.value}.mp4`;
+                    document.getElementById('bg_video').src = `static/videos/${selectedOption.value}.mp4`;
                 });
         });
 </script>
