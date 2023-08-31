@@ -106,7 +106,7 @@
 <h1>数字人演示</h1>
 <div class="content-wrapper">
     <div class="container">
-        <video autoplay loop muted>
+        <video autoplay loop muted id="bg_video">
             <source src="static/welcome.mp4" type="video/mp4">
             您的浏览器不支持 video 标签。
         </video>
@@ -203,6 +203,13 @@
                 optionElement.value = item.value;
                 selectElement.add(optionElement);
             });
+            selectElement.addEventListener("change",
+                (event) => {
+                    // 获取被选定的option元素
+                    let selectedOption = event.target;
+                    //更新数字人背景视频
+                    document.getElementById('bg_video').src = `static/${selectedOption.value}.mp4`;
+                });
         });
 
     /**
