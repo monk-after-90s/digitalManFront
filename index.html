@@ -127,6 +127,7 @@
 <iframe name="targetIfr" style="display:none"></iframe>
 <script src="static/js/utilities.js"></script>
 <script src="static/js/form.js"></script>
+<script src="static/js/prepare_show.js"></script>
 <script>
     //select下拉
     fetch(`${base_url}/digital_humans`)
@@ -143,8 +144,7 @@
                 (event) => {
                     // 获取被选定的option元素
                     let selectedOption = event.target;
-                    //更新数字人背景视频
-                    document.getElementById('bg_video').src = `static/videos/${selectedOption.value}.mp4`;
+                    prepare_show(selectedOption.value);
                 });
         });
 </script>

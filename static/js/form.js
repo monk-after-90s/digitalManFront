@@ -13,7 +13,7 @@ function submitForm() {
     const formObj = formToObj(form);
     //更新数字人背景视频
     if (!document.getElementById('bg_video').src.endsWith(`static/videos/${formObj.digman}.mp4`)) {
-        document.getElementById('bg_video').src = `static/videos/${formObj.digman}.mp4`;
+        prepare_show(formObj.digman);
     }
     formObj.stream_id = streamId;
     // 使用fetch API发送POST请求
