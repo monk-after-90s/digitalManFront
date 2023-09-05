@@ -7,33 +7,49 @@ let vd = document.getElementById('video');
 function submitForm() {
     //表单
     const form = document.getElementById('form')
-
-    let streamId = uuidv4();
     // 获取表单元素
     const formObj = formToObj(form);
     //更新数字人背景视频
     if (!document.getElementById('bg_video').src.endsWith(`static/videos/${formObj.digman}.mp4`)) {
         prepare_show(formObj.digman);
     }
-    formObj.stream_id = streamId;
-    // 使用fetch API发送POST请求
-    console.log("formObj:", formObj);
-    fetch(`${base_url}/let_digman_talk`, {
-        method: 'POST', body: JSON.stringify(formObj), headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(response => response.json()) // 解析JSON响应
-        .then(video_count => {
-            console.log(`streamId=${streamId} video_count=${video_count}`);
-            // 处理音视频分段播放
-            let encoded_stream_id = encodeURIComponent(streamId);
-
+    //建立一个流
+    const params = new URLSearchParams();
+    params.append('digital_man', formObj.digman);
+    fetch(`${base_url}/avSustainStream/establish_stream?` + params.toString())
+        .then(response => response.json())
+        .then(streamId => {
+            console.log(`streamId=${streamId}`);
+            //视频播放
             vd.style.display = "block";
-            playVideoAudio(encoded_stream_id, 0, video_count);
-        })
-        .catch(error => {
-            console.error('提交表单时出错:', error);
+            vd.src = `${base_url}/avSustainStream/listen_video_stream?stream_id=${streamId}`;
+
+            //音频播放
+            ad.src = `${base_url}/avSustainStream/listen_audio_stream?stream_id=${streamId}`;
+            ad.load();
+            ad.play().then(r => {
+            });
         });
+
+
+    // // 使用fetch API发送POST请求
+    // console.log("formObj:", formObj);
+    // fetch(`${base_url}/let_digman_talk`, {
+    //     method: 'POST', body: JSON.stringify(formObj), headers: {
+    //         'Content-Type': 'application/json'
+    //     }
+    // }).then(response => response.json()) // 解析JSON响应
+    //     .then(video_count => {
+    //         console.log(`streamId=${streamId} video_count=${video_count}`);
+    //         // 处理音视频分段播放
+    //         let encoded_stream_id = encodeURIComponent(streamId);
+    //
+    //         vd.style.display = "block";
+    //         playVideoAudio(encoded_stream_id, 0, video_count);
+    //     })
+    //     .catch(error => {
+    //         console.error('提交表单时出错:', error);
+    //     });
 }
 
 /**
