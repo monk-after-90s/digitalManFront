@@ -20,36 +20,42 @@ function submitForm() {
         .then(response => response.json())
         .then(streamId => {
             console.log(`streamId=${streamId}`);
+            let encoded_stream_id = encodeURIComponent(streamId);
             //视频播放
             vd.style.display = "block";
-            vd.src = `${base_url}/avSustainStream/listen_video_stream?stream_id=${streamId}`;
-
+            vd.src = `${base_url}/avSustainStream/listen_video_stream?stream_id=${encoded_stream_id}`;
             //音频播放
-            ad.src = `${base_url}/avSustainStream/listen_audio_stream?stream_id=${streamId}`;
+            ad.src = `${base_url}/avSustainStream/listen_audio_stream?stream_id=${encoded_stream_id}`;
             ad.load();
             ad.play().then(r => {
             });
+            let_digital_man_talk(streamId, formObj.speech_content).then(r => {
+            });
         });
+}
 
-
-    // // 使用fetch API发送POST请求
-    // console.log("formObj:", formObj);
-    // fetch(`${base_url}/let_digman_talk`, {
-    //     method: 'POST', body: JSON.stringify(formObj), headers: {
-    //         'Content-Type': 'application/json'
-    //     }
-    // }).then(response => response.json()) // 解析JSON响应
-    //     .then(video_count => {
-    //         console.log(`streamId=${streamId} video_count=${video_count}`);
-    //         // 处理音视频分段播放
-    //         let encoded_stream_id = encodeURIComponent(streamId);
-    //
-    //         vd.style.display = "block";
-    //         playVideoAudio(encoded_stream_id, 0, video_count);
-    //     })
-    //     .catch(error => {
-    //         console.error('提交表单时出错:', error);
-    //     });
+/**
+ * 使数字人说话
+ * @param {*} streamId
+ * @param {Document.speech_content} speech_content
+ */
+async function let_digital_man_talk(streamId, speech_content) {
+    const splitStrings = speech_content.split(/[。,，;；:：]+/);
+    const cleanedStrings = splitStrings.filter(str => str.trim() !== '');
+    for (const s of cleanedStrings) {
+        const response = await fetch(`${base_url}/avSustainStream/let_digital_man_talk`, {
+            method: 'POST',
+            body: JSON.stringify({"stream_id": streamId, "speech_content": s}),
+            headers: {'Content-Type': 'application/json'}
+        });
+        // 检查响应状态是否正常
+        if (!response.ok) {
+            console.error(`Fail to talk:${s}`);
+            return;
+        }
+        console.log(await response.json());
+        await sleep(350 * s.length);
+    }
 }
 
 /**

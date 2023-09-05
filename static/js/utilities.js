@@ -26,3 +26,11 @@ function formToObj(form) {
 
     return obj;
 }
+
+/**
+ * 异步sleep
+ * @param {number} ms
+ */
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
