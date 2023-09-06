@@ -16,6 +16,7 @@ async function submitForm() {
     //建立一个流
     const params = new URLSearchParams();
     params.append('digital_man', formObj.digman);
+    console.log("Try to establish_stream");
     fetch(`${base_url}/avSustainStream/establish_stream?` + params.toString())
         .then(response => response.json())
         .then(streamId => {
