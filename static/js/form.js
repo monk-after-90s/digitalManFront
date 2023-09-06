@@ -1,4 +1,4 @@
-let base_url = '/api';
+let base_url = 'http://region-9.autodl.pro:31400';
 //音频播放组件
 let ad = new Audio();
 //视频播放组件
@@ -25,10 +25,47 @@ function submitForm() {
             vd.style.display = "block";
             vd.src = `${base_url}/avSustainStream/listen_video_stream?stream_id=${encoded_stream_id}`;
             //音频播放
-            ad.src = `${base_url}/avSustainStream/listen_audio_stream?stream_id=${encoded_stream_id}`;
-            ad.load();
-            ad.play().then(r => {
-            });
+            // ad.src = `${base_url}/avSustainStream/listen_audio_stream?stream_id=${encoded_stream_id}`;
+            // ad.load();
+            // ad.play().then(r => {
+            // });
+            fetch(`${base_url}/avSustainStream/listen_audio_stream?stream_id=${encoded_stream_id}`)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("listen_audio_stream fails.");
+                    }
+                    return response.body.getReader();
+                })
+                .then((reader) => {
+                    function read() {
+                        return reader.read().then(({done, value}) => {
+                            if (done) {
+                                console.log("Stream ended, closing connection.");
+                                return null;
+                            }
+                            let audioData = value.buffer;
+                            if (audioData) {
+                                const audioContext = new AudioContext();
+
+                                audioContext.decodeAudioData(audioData).then((audioBuffer) => {
+                                    const source = audioContext.createBufferSource();
+                                    source.buffer = audioBuffer;
+                                    source.connect(audioContext.destination);
+                                    source.start();
+                                }).catch((error) => {
+                                    console.error("Error decoding audio data:", error);
+                                });
+                            }
+
+                            return read(); // 递归调用以继续读取 todo 改成循环
+                        });
+                    }
+
+                    return read();
+                })
+                .catch((error) => console.error(error));
+
+
             let_digital_man_talk(streamId, formObj.speech_content).then(r => {
             });
         });
