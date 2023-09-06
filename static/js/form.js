@@ -63,7 +63,7 @@ async function submitForm() {
  * @param {Document.speech_content} speech_content
  */
 async function let_digital_man_talk(streamId, speech_content) {
-    const splitStrings = speech_content.split(/[。,，;；:：]+/);
+    const splitStrings = speech_content.split(/[“”‘’"'。,，;；:：]+/);
     const cleanedStrings = splitStrings.filter(str => str.trim() !== '');
     for (const s of cleanedStrings) {
         const response = await fetch(`${base_url}/avSustainStream/let_digital_man_talk`, {
