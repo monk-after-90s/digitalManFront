@@ -86,33 +86,3 @@ async function let_digital_man_talk(streamId, speech_content) {
     console.log(`Close stream:${decodeURIComponent(encoded_stream_id)} res:${await res.json()}`);
     vd.style.display = "none";
 }
-
-/**
- * 播放stream_id的第index个视频音频，然后接着播放下一个，直到播放至第max_index个
- * @param encoded_stream_id
- * @param {number} index encoded_stream_id流的视频分段编号
- * @param count
- */
-function playVideoAudio(encoded_stream_id, index, count) {
-    //递归尾
-    if (index >= count) {
-        vd.style.display = "none";
-        console.log("播放完毕");
-        return;
-    }
-
-
-    //视频播放
-    vd.src = `${base_url}/digman_video?stream_id=${encoded_stream_id}&index=${index}`;
-    //音频播放
-    //新播音源
-    ad.src = `${base_url}/digman_audio?stream_id=${encoded_stream_id}&index=${index}`;
-    ad.load();
-    //播放完成的事件
-    let play_over_handler = () => {
-        playVideoAudio(encoded_stream_id, index + 1, count);
-    }
-    ad.onended = play_over_handler;
-    ad.onerror = play_over_handler;
-    ad.play();
-}
