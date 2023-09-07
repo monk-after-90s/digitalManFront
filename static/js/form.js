@@ -80,7 +80,7 @@ async function let_digital_man_talk(streamId, speech_content) {
         console.log(await response.json());
     }
     //关闭流
-    await sleep(3000);
+    await sleep(3000);//todo 由后端决定什么时候关闭
     let encoded_stream_id = encodeURIComponent(streamId);
     const params = new URLSearchParams();
     params.append('stream_id', encoded_stream_id);
