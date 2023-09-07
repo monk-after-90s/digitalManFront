@@ -34,6 +34,7 @@ async function submitForm() {
                     return response.body.getReader();
                 })
                 .then(async (reader) => {
+                    console.log("get reader");
                     let_digital_man_talk(streamId, formObj.speech_content).then(r => {
                     });
                     while (true) {
