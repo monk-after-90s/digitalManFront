@@ -1,4 +1,4 @@
-let base_url = 'http://region-9.autodl.pro:31400';
+let base_url = '/api';
 //音频播放组件
 let ad = new Audio();
 //视频播放组件
