@@ -80,11 +80,12 @@ async function let_digital_man_talk(streamId, speech_content) {
         console.log(await response.json());
     }
     //关闭流
-    await sleep(3000);//todo 由后端决定什么时候关闭
     let encoded_stream_id = encodeURIComponent(streamId);
     const params = new URLSearchParams();
     params.append('stream_id', encoded_stream_id);
     const res = await fetch(`${base_url}/avSustainStream/close_stream?` + params.toString());
+    //重置沉默视频的播放位置
+    document.getElementById('bg_video').currentTime = 0;
     console.log(`Close stream:${decodeURIComponent(encoded_stream_id)} res:${await res.json()}`);
     vd.style.display = "none";
 }
