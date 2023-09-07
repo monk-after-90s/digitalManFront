@@ -17,7 +17,7 @@ async function submitForm() {
     console.log("Try to establish_stream");
     fetch(`${base_url}/avSustainStream/establish_stream?` + params.toString())
         .then(response => response.json())
-        .then(streamId => {
+        .then(async streamId => {
             console.log(`streamId=${streamId}`);
             let encoded_stream_id = encodeURIComponent(streamId);
             //视频流播放器
@@ -33,8 +33,7 @@ async function submitForm() {
                 })
                 .then(async (reader) => {
                     console.log("get reader");
-                    let_digital_man_talk(streamId, formObj.speech_content).then(r => {
-                    });
+                    // let_digital_man_talk(streamId, formObj.speech_content).then(r => {});
                     while (true) {
                         let {done, value} = await reader.read();
                         if (done) {
@@ -53,6 +52,10 @@ async function submitForm() {
                     }
                 })
                 .catch((error) => console.error(error));
+            //在pycharm开发网页的时候，就能放在上面注释的地方，变成严格的事件驱动 ToDo 为什么
+            await sleep(500);
+            let_digital_man_talk(streamId, formObj.speech_content).then(r => {
+            });
         });
 }
 
