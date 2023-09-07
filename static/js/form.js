@@ -4,7 +4,7 @@ let vd = document.getElementById('video');
 
 async function submitForm() {
     //表单
-    const form = document.getElementById('form')
+    const form = document.getElementById('form');
     // 获取表单元素
     const formObj = formToObj(form);
     //更新数字人背景视频
