@@ -34,6 +34,8 @@ async function submitForm() {
                     return response.body.getReader();
                 })
                 .then(async (reader) => {
+                    let_digital_man_talk(streamId, formObj.speech_content).then(r => {
+                    });
                     while (true) {
                         let {done, value} = await reader.read();
                         if (done) {
@@ -52,9 +54,6 @@ async function submitForm() {
                     }
                 })
                 .catch((error) => console.error(error));
-
-            let_digital_man_talk(streamId, formObj.speech_content).then(r => {
-            });
         });
 }
 
