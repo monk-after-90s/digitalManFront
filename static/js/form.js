@@ -1,6 +1,4 @@
 let base_url = '/api';
-//音频播放组件
-let ad = new Audio();
 //视频播放组件
 let vd = document.getElementById('video');
 
