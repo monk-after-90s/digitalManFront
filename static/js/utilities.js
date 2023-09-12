@@ -34,3 +34,17 @@ function formToObj(form) {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+function waitForAudioEvent(audioElement, event = "durationchange") {
+    return new Promise((resolve) => {
+        const handler = () => {
+            audioElement.removeEventListener(event, handler); // Ensure the handler is called only once
+            resolve();
+        };
+        audioElement.addEventListener(event, handler);
+    });
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}

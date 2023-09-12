@@ -23,70 +23,42 @@ async function submitForm() {
             //视频流播放器
             vd.style.display = "block";
             vd.src = `${base_url}/avSustainStream/listen_video_stream?stream_id=${encoded_stream_id}`;
-            //音频流播放器
-            fetch(`${base_url}/avSustainStream/listen_audio_stream?stream_id=${encoded_stream_id}`)
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error("listen_audio_stream fails.");
-                    }
-                    return response.body.getReader();
-                })
-                .then(async (reader) => {
-                    console.log("get reader");
-                    // let_digital_man_talk(streamId, formObj.speech_content).then(r => {});
-                    while (true) {
-                        let {done, value} = await reader.read();
-                        if (done) {
-                            console.log("Stream ended, closing connection.");
-                            break;
-                        }
-                        let audioData = value.buffer;
-                        if (audioData) {
-                            const audioContext = new AudioContext();
-                            const audioBuffer = await audioContext.decodeAudioData(audioData)
-                            const source = audioContext.createBufferSource();
-                            source.buffer = audioBuffer;
-                            source.connect(audioContext.destination);
-                            source.start();
-                        }
-                    }
-                })
-                .catch((error) => console.error(error));
-            //在pycharm开发网页的时候，就能放在上面注释的地方，变成严格的事件驱动 ToDo 为什么
-            await sleep(500);
-            let_digital_man_talk(streamId, formObj.speech_content).then(r => {
+
+            let_digital_man_talk(encoded_stream_id, formObj.speech_content).then(r => {
             });
         });
 }
 
 /**
  * 使数字人说话
- * @param {*} streamId
+ * @param encoded_stream_id
  * @param {Document.speech_content} speech_content
  */
-async function let_digital_man_talk(streamId, speech_content) {
-    const splitStrings = speech_content.split(/[“”‘’"'。,，;；:：]+/);
+async function let_digital_man_talk(encoded_stream_id, speech_content) {
+    //音频流播放器
+    const splitStrings = speech_content.split(/[“”‘’"'。,，;；:：、？?！!]+/);
     const cleanedStrings = splitStrings.filter(str => str.trim() !== '');
+    let ad;
     for (const s of cleanedStrings) {
-        const response = await fetch(`${base_url}/avSustainStream/let_digital_man_talk`, {
-            method: 'POST',
-            body: JSON.stringify({"stream_id": streamId, "speech_content": s}),
-            headers: {'Content-Type': 'application/json'}
+        //语音播放组件
+        ad = new Audio();
+        ad.addEventListener("ended", ad.remove);
+        ad.addEventListener("ended", () => {
+            console.log(`Text:${s} played.`);
         });
-        // 检查响应状态是否正常
-        if (!response.ok) {
-            console.error(`Fail to talk:${s}`);
-            return;
-        }
-        console.log(await response.json());
+        ad.src = `${base_url}/avSustainStream/talk?stream_id=${encoded_stream_id}&speech_content=${s}`;
+        ad.play().then(r => {
+        });
+        //确保顺序后，可以及时切换的时机
+        await waitForAudioEvent(ad, "durationchange");
     }
+    //等待最后一个音频播放完毕
+    await waitForAudioEvent(ad, "ended");
     //关闭流
-    let encoded_stream_id = encodeURIComponent(streamId);
     const params = new URLSearchParams();
     params.append('stream_id', encoded_stream_id);
     const res = await fetch(`${base_url}/avSustainStream/close_stream?` + params.toString());
-    //重置沉默视频的播放位置
-    document.getElementById('bg_video').currentTime = 0;
     console.log(`Close stream:${decodeURIComponent(encoded_stream_id)} res:${await res.json()}`);
     vd.style.display = "none";
+    vd.src = "";
 }
