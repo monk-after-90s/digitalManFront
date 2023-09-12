@@ -36,7 +36,7 @@ async function submitForm() {
  */
 async function let_digital_man_talk(encoded_stream_id, speech_content) {
     //音频流播放器
-    const splitStrings = speech_content.split(/[“”‘’"'。,，;；:：、？?！!]+/);
+    const splitStrings = speech_content.split(/[“”‘’"。,，;；:：、？?！!]+/);
     const cleanedStrings = splitStrings.filter(str => str.trim() !== '');
     let ad;
     for (const s of cleanedStrings) {
